@@ -8,13 +8,13 @@ variable "public_subnet_cidrs" {
 
 
 variable "azs" {
- type        = list(string)
- description = "Availability Zones"
- default     = ["eu-west-3a", "eu-west-3b", "eu-west-3c"]
+  type        = list(string)
+  description = "Availability Zones"
+  default     = ["eu-west-3a", "eu-west-3b", "eu-west-3c"]
 }
 
 variable "prefixes" {
-    type = list(string)
-    description = "Prefixes to be used for naming"
-    default = ["a" , "b" , "c"]
+  type        = list(string)
+  description = "Prefixes to be used for naming"
+  default     = ["a", "b", "c"]
 }
