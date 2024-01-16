@@ -126,21 +126,3 @@ module "instances" {
   sg_id          = aws_security_group.instance_sg.id
   user_data_file = "user_data.sh"
 }
-
-# module "instance_b" {
-#   source         = "./modules/ec2_instance"
-#   instance_name  = "tf-instance-b"
-#   subnet_id      = aws_subnet.subnet_b.id
-#   key_name       = aws_key_pair.key_pair.key_name
-#   sg_id          = aws_security_group.instance_sg.id
-#   user_data_file = "user_data.sh"
-# }
-
-# module "instance_c" {
-#   source         = "./modules/ec2_instance"
-#   instance_name  = "tf-instance-c"
-#   subnet_id      = aws_subnet.subnet_c.id
-#   key_name       = aws_key_pair.key_pair.key_name
-#   sg_id          = aws_security_group.instance_sg.id
-#   user_data_file = "user_data.sh"
-# }
