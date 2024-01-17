@@ -112,6 +112,15 @@ resource "aws_security_group" "instance_sg" {
     protocol    = "icmp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
 }
 
 
@@ -121,8 +130,10 @@ module "instances" {
   count          = 3
   source         = "./modules/ec2_instance"
   instance_name  = "tf-instance-${var.prefixes[count.index]}"
+  instance_type  = "t2.micro"
   subnet_id      = aws_subnet.public_subnets[count.index].id
   key_name       = aws_key_pair.key_pair.key_name
   sg_id          = aws_security_group.instance_sg.id
   user_data_file = "user_data.sh"
 }
+
