@@ -34,6 +34,17 @@ resource "aws_key_pair" "key_pair" {
   public_key = tls_private_key.tf_key_pair.public_key_openssh
 }
 
+resource "null_resource" "set_file_permissions" {
+  provisioner "local-exec" {
+    command = "chmod 400 ./tf-key-pair.pem"
+  }
+
+  triggers = {
+    local_file_content = local_file.private_key.content
+  }
+}
+
+
 
 
 # Create three subnets in different availability zones
