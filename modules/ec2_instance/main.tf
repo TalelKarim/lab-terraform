@@ -28,15 +28,21 @@ variable "sg_id" {
   description = "The id of the security group to be referenced in the ec2 instance"
 }
 
-# Use the aws_ami data source to find the latest Ubuntu 20.04 LTS AMI
-data "aws_ami" "ubuntu" {
-  most_recent = true
-  owners      = ["099720109477"] # Canonical's AWS account ID for Ubuntu AMIs
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
-  }
+variable "ami_id" {
+    type        = string
+    description = "The image id we will use to launch the ec2 instance"
 }
+
+
+# # Use the aws_ami data source to find the latest Ubuntu 20.04 LTS AMI
+# data "aws_ami" "ubuntu" {
+#   most_recent = true
+#   owners      = ["099720109477"] # Canonical's AWS account ID for Ubuntu AMIs
+#   filter {
+#     name   = "name"
+#     values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+#   }
+# }
 
 # Create an Elastic IP
 resource "aws_eip" "elastic_ip" {
@@ -46,12 +52,13 @@ resource "aws_eip" "elastic_ip" {
 
 # Attach the security group to the EC2 instance
 resource "aws_instance" "ec2_instance" {
-  ami                    = data.aws_ami.ubuntu.id
+  ami                    = var.ami_id
   instance_type          = var.instance_type
   subnet_id              = var.subnet_id
   key_name               = var.key_name
-  user_data              = file(var.user_data_file)
+  # user_data              = file(var.user_data_file)
   vpc_security_group_ids = [var.sg_id]
+  user_data_replace_on_change = true
   tags = {
     Name = var.instance_name
   }

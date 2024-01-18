@@ -141,6 +141,7 @@ module "instances" {
   count          = 3
   source         = "./modules/ec2_instance"
   instance_name  = "tf-instance-${var.prefixes[count.index]}"
+  ami_id = "ami-0baabe256c7921f0a"
   instance_type  = "t2.micro"
   subnet_id      = aws_subnet.public_subnets[count.index].id
   key_name       = aws_key_pair.key_pair.key_name
