@@ -32,3 +32,5 @@ Documentez votre configuration en ajoutant des commentaires pertinents.
 
 
 
+subnets
+security group in loadbalancer

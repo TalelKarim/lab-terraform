@@ -18,3 +18,4 @@ variable "prefixes" {
   description = "Prefixes to be used for naming"
   default     = ["a", "b", "c"]
 }
+

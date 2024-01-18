@@ -136,15 +136,28 @@ resource "aws_security_group" "instance_sg" {
 
 
 
-# Create Ubuntu EC2 instances in each subnet using the same key pair  and with the use of modules 
-module "instances" {
-  count          = 3
-  source         = "./modules/ec2_instance"
-  instance_name  = "tf-instance-${var.prefixes[count.index]}"
-  instance_type  = "t2.micro"
-  subnet_id      = aws_subnet.public_subnets[count.index].id
-  key_name       = aws_key_pair.key_pair.key_name
-  sg_id          = aws_security_group.instance_sg.id
-  user_data_file = "user_data.sh"
-}
+# # Create Ubuntu EC2 instances in each subnet using the same key pair  and with the use of modules 
+# module "instances" {
+#   count          = 3
+#   source         = "./modules/ec2_instance"
+#   instance_name  = "tf-instance-${var.prefixes[count.index]}"
+#   instance_type  = "t2.micro"
+#   subnet_id      = aws_subnet.public_subnets[count.index].id
+#   key_name       = aws_key_pair.key_pair.key_name
+#   sg_id          = aws_security_group.instance_sg.id
+#   user_data_file = "user_data.sh"
+# }
 
+
+module "alb"{
+  source = "./modules/alb"
+  vpc_id = aws_vpc.main.id
+  lb_security_group_ids = [aws_security_group.instance_sg.id]
+  lb_subnets = aws_subnet.public_subnets[*].id
+  lb_internal = false 
+  lb_enable_deletion_protection = true
+  lb_target_port = "80"
+  lb_name = "alb"
+  lb_load_balancer_type = "application"
+  
+}
