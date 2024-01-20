@@ -4,11 +4,10 @@ resource "aws_s3_bucket" "this" {
 }
 
 resource "aws_s3_bucket_policy" "this" {
-  bucket = "aws_s3_bucket.this.id"
+  bucket = aws_s3_bucket.this.id
   policy = data.aws_iam_policy_document.s3_bucket_lb_write.json
 }
 
-data "aws_elb_service_account" "main" {}
 
 
 data "aws_iam_policy_document" "s3_bucket_lb_write" {
@@ -24,8 +23,8 @@ data "aws_iam_policy_document" "s3_bucket_lb_write" {
     ]
 
     principals {
-      identifiers = ["${data.aws_elb_service_account.main.arn}"]
-      type        = "AWS"
+      identifiers = ["logdelivery.elasticloadbalancing.amazonaws.com"]
+      type        = "Service"
     }
   }
 
@@ -34,7 +33,7 @@ data "aws_iam_policy_document" "s3_bucket_lb_write" {
       "s3:PutObject"
     ]
     effect    = "Allow"
-    resources = ["${aws_s3_bucket.this.arn}/*"]
+    resources = ["arn:aws:s3:::alb-logs-tkc/tf-alb/AWSLogs/123905443795/*"]
     principals {
       identifiers = ["delivery.logs.amazonaws.com"]
       type        = "Service"
