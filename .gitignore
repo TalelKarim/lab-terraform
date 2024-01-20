@@ -3,3 +3,4 @@ tf-key-pair.pem
 .terraform.lock.hcl
 terraform.tfstate.backup
 terraform.tfstate
+elb_logs.txt

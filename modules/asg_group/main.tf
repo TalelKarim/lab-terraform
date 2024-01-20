@@ -10,11 +10,83 @@ data "aws_ami" "ubuntu" {
   }
 }
 
+
+
+# Create an SSH key pair
+resource "tls_private_key" "tf_key_pair" {
+  algorithm = "RSA"
+}
+
+resource "local_file" "private_key" {
+  filename = "./tf-key-pair.pem" # Change the path as needed
+  content  = tls_private_key.tf_key_pair.private_key_pem
+}
+
+resource "aws_key_pair" "key_pair" {
+  key_name   = "tf-key-pair"
+  public_key = tls_private_key.tf_key_pair.public_key_openssh
+}
+
+resource "null_resource" "set_file_permissions" {
+  provisioner "local-exec" {
+    command = "chmod 400 ./tf-key-pair.pem"
+  }
+
+  triggers = {
+    local_file_content = local_file.private_key.content
+  }
+}
+
+
+# Create a security group
+resource "aws_security_group" "instance_sg" {
+  name        = "instance-sg"
+  description = "Security group for EC2 instance"
+  vpc_id      = var.vpc_id
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = -1
+    to_port     = -1
+    protocol    = "icmp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+}
+
+
 #Create a launch template for the autoscaling group 
 resource "aws_launch_template" "this" {
   name          = "${var.project}-tpl"
   instance_type = var.instance_type
-  key_name      = var.key_name
+  key_name      = aws_key_pair.key_pair.key_name
   user_data     = filebase64(var.user_data_file)
   image_id      = data.aws_ami.ubuntu.id
   block_device_mappings {
@@ -28,7 +100,7 @@ resource "aws_launch_template" "this" {
 
   network_interfaces {
     associate_public_ip_address = true
-    security_groups             = var.security_group_ids
+    security_groups             = [aws_security_group.instance_sg.id]
   }
 }
 

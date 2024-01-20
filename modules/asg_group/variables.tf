@@ -12,16 +12,15 @@ variable "instance_type" {
 
 }
 
-
+variable "vpc_id" {
+  type        = string
+  description = "The id of the vpc where all the infrastructure is created"
+}
 variable "user_data_file" {
   type        = string
   description = "The path to the user data file"
 }
 
-variable "key_name" {
-  type        = string
-  description = "The name of the key that will be used to ssh to the EC2 instance"
-}
 
 variable "vpc_zone_identifier" {
   type        = list(string)
@@ -48,10 +47,7 @@ variable "asg_health_check_type" {
   description = "The type of the health check done by the autoscaling group"
 }
 
-variable "security_group_ids" {
-  type        = list(string)
-  description = "Security groups that will be attached to the instance"
-}
+
 
 variable "input_lb_target_group_arn" {
   type        = string
