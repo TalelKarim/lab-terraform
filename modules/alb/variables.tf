@@ -21,6 +21,12 @@ variable "input_bucket_name" {
   type        = string
   description = "The bucket name that will extracted from the bucket module"
 }
+
+variable "account_id" {
+  type        = string
+  description = "The id of the aws account"
+  default     = "123905443795"
+}
 # variable "lb_target_port" {}
 # variable "lb_protocol" {}
 # variable "lb_target_type" {}

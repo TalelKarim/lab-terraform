@@ -35,7 +35,7 @@ resource "aws_lb" "my_alb" {
 
   access_logs {
     bucket  = var.input_bucket_name
-    prefix  = var.lb_name
+    prefix  = "${var.lb_name}/AWSLogs/${var.account_id}/*"
     enabled = true
   }
   tags = {

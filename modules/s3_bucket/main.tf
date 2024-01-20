@@ -10,6 +10,7 @@ resource "aws_s3_bucket_policy" "this" {
 
 
 
+
 data "aws_iam_policy_document" "s3_bucket_lb_write" {
   policy_id = "s3_bucket_lb_logs"
 
@@ -53,7 +54,6 @@ data "aws_iam_policy_document" "s3_bucket_lb_write" {
     }
   }
 }
-
 output "bucket_name" {
   value = aws_s3_bucket.this.bucket
 }

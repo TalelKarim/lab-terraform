@@ -1,5 +1,4 @@
 
-
 # Use the aws_ami data source to find the latest Ubuntu 20.04 LTS AMI
 data "aws_ami" "ubuntu" {
   most_recent = true
@@ -9,8 +8,6 @@ data "aws_ami" "ubuntu" {
     values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
   }
 }
-
-
 
 # Create an SSH key pair
 resource "tls_private_key" "tf_key_pair" {

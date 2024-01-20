@@ -1,5 +1,4 @@
 # variables.tf
-
 variable "prefixes" {
   type        = list(string)
   description = "Prefixes to be used for naming"
