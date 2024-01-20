@@ -1,23 +1,20 @@
 
-# terraform apply -var-file="app.tfvars" -var="createdby=e2esa"
-
-# locals {
-#   name = "${var.project}-${var.prefix}"
-#   tags = {
-#     Project     = var.project
-#     createdby   = var.createdby
-#     CreatedOn   = timestamp()
-#     Environment = terraform.workspace
-#   }
-# }
-
 resource "aws_lb" "my_alb" {
-  name               = var.lb_name
-  internal           = var.lb_internal
-  load_balancer_type = var.lb_load_balancer_type 
-  security_groups    = var.lb_security_group_ids
-  subnets            = var.lb_subnets
+  name                             = var.lb_name
+  internal                         = var.lb_internal
+  load_balancer_type               = var.lb_load_balancer_type
+  subnets                          = var.lb_subnets
+  enable_deletion_protection       = false
+  enable_cross_zone_load_balancing = true
 
+  access_logs {
+    bucket  = var.input_bucket_name
+    prefix  = var.lb_name
+    enabled = true
+  }
+  tags = {
+    Environment = "demo-tf"
+  }
 }
 
 resource "aws_lb_listener" "my_lb_listener" {
@@ -32,11 +29,14 @@ resource "aws_lb_listener" "my_lb_listener" {
 }
 
 resource "aws_lb_target_group" "my_tg" {
-  name     = "my-tg"
+  name        = "my-tg"
   target_type = "instance"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = var.vpc_id
+  port        = 3000
+  protocol    = "HTTP"
+  vpc_id      = var.vpc_id
 }
 
 
+output "lb_target_group_arn" {
+  value = aws_lb_target_group.my_tg.arn
+}

@@ -134,30 +134,37 @@ resource "aws_security_group" "instance_sg" {
 
 }
 
-
-
-# # Create Ubuntu EC2 instances in each subnet using the same key pair  and with the use of modules 
-# module "instances" {
-#   count          = 3
-#   source         = "./modules/ec2_instance"
-#   instance_name  = "tf-instance-${var.prefixes[count.index]}"
-#   instance_type  = "t2.micro"
-#   subnet_id      = aws_subnet.public_subnets[count.index].id
-#   key_name       = aws_key_pair.key_pair.key_name
-#   sg_id          = aws_security_group.instance_sg.id
-#   user_data_file = "user_data.sh"
-# }
-
-
-module "alb"{
-  source = "./modules/alb"
-  vpc_id = aws_vpc.main.id
-  lb_security_group_ids = [aws_security_group.instance_sg.id]
-  lb_subnets = aws_subnet.public_subnets[*].id
-  lb_internal = false 
-  lb_enable_deletion_protection = true
-  lb_target_port = "80"
-  lb_name = "alb"
-  lb_load_balancer_type = "application"
-  
+module "s3_bucket" {
+  source      = "./modules/s3_bucket"
+  bucket_name = "alb-logs-tkc"
 }
+
+
+module "alb" {
+  source                = "./modules/alb"
+  lb_name               = "tf-alb"
+  lb_internal           = false
+  lb_load_balancer_type = "application"
+  lb_subnets            = aws_subnet.public_subnets[*].id
+  vpc_id                = aws_vpc.main.id
+  input_bucket_name     = module.s3_bucket.bucket_name
+}
+
+
+# Create an autoscaling group with the necessary cloudwatch alarms
+module "auto_scaling_group" {
+  source                    = "./modules/asg_group"
+  instance_type             = "t2.medium"
+  key_name                  = aws_key_pair.key_pair.key_name
+  user_data_file            = "user_data.sh"
+  vpc_zone_identifier       = aws_subnet.public_subnets[*].id
+  max_size                  = 5
+  min_size                  = 1
+  desired_capacity          = 3
+  asg_health_check_type     = "ELB"
+  input_lb_target_group_arn = module.alb.lb_target_group_arn
+  security_group_ids        = [aws_security_group.instance_sg.id]
+}
+
+
+
