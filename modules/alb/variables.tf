@@ -39,3 +39,8 @@ variable "lb_target_tags_map" {
   type        = map(string)
   default     = {}
 }
+
+variable "ssl_certificate_arn" {
+  type        = string
+  description = "The arn of the SSL certifcate used with HTTPS traffic"
+}

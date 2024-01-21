@@ -34,9 +34,9 @@ data "aws_iam_policy_document" "s3_bucket_lb_write" {
       "s3:PutObject"
     ]
     effect    = "Allow"
-    resources = ["arn:aws:s3:::alb-logs-tkc/tf-alb/AWSLogs/123905443795/*"]
+    resources = ["arn:aws:s3:::alb-logs-tk/tf-alb/AWSLogs/123905443795/*"]
     principals {
-      identifiers = ["delivery.logs.amazonaws.com"]
+      identifiers = ["logdelivery.elasticloadbalancing.amazonaws.com"]
       type        = "Service"
     }
   }
@@ -49,11 +49,8 @@ data "aws_iam_policy_document" "s3_bucket_lb_write" {
     effect    = "Allow"
     resources = ["${aws_s3_bucket.this.arn}"]
     principals {
-      identifiers = ["delivery.logs.amazonaws.com"]
+      identifiers = ["logdelivery.elasticloadbalancing.amazonaws.com"]
       type        = "Service"
     }
   }
-}
-output "bucket_name" {
-  value = aws_s3_bucket.this.bucket
 }

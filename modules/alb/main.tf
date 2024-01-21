@@ -12,6 +12,14 @@ resource "aws_security_group" "alb_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+    ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+
   egress {
     from_port        = 0
     to_port          = 0
@@ -33,27 +41,46 @@ resource "aws_lb" "my_alb" {
   enable_cross_zone_load_balancing = true
   security_groups                  = [aws_security_group.alb_sg.id]
 
-  access_logs {
-    bucket  = var.input_bucket_name
-    prefix  = "${var.lb_name}/AWSLogs/${var.account_id}/*"
-    enabled = true
-  }
+  # access_logs {
+  #   bucket  = var.input_bucket_name
+  #   prefix  = "${var.lb_name}"
+  #   enabled = true
+  # }
   tags = {
     Environment = "demo-tf"
   }
 }
 
-resource "aws_lb_listener" "my_lb_listener" {
+# HTTP listener on port 80
+resource "aws_lb_listener" "http_listener" {
   load_balancer_arn = aws_lb.my_alb.arn
-  port              = "80"
+  port              = 80
   protocol          = "HTTP"
 
+  default_action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+}
+
+# HTTPS listener on port 443
+resource "aws_lb_listener" "https_listener" {
+  load_balancer_arn = aws_lb.my_alb.arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+
+  certificate_arn = var.ssl_certificate_arn
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.my_tg.arn
   }
 }
-
 resource "aws_lb_target_group" "my_tg" {
   name        = "my-tg"
   target_type = "instance"
@@ -62,7 +89,3 @@ resource "aws_lb_target_group" "my_tg" {
   vpc_id      = var.vpc_id
 }
 
-
-output "lb_target_group_arn" {
-  value = aws_lb_target_group.my_tg.arn
-}
