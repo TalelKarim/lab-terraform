@@ -14,8 +14,8 @@ variable "elb_zone_id" {
   description = "The zone id of the application load balancer"
 }
 
-variable "hosted_zone_name"{
-  type = string
+variable "hosted_zone_name" {
+  type        = string
   description = "The name of the hosted zone that will be created"
-  default = "test-zone.com"
+  default     = "test-zone.com"
 }

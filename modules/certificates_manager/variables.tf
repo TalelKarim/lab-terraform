@@ -5,6 +5,6 @@ variable "application_domain_name" {
 }
 
 variable "hosted_zone_id" {
-  type = string 
+  type        = string
   description = "The hosted zone id of route53 where the record will be registered"
 }

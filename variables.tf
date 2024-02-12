@@ -14,13 +14,13 @@ variable "region" {
 
 
 variable "main_domain" {
-  type = string
+  type        = string
   description = "The main domain of the application"
-  default = "test-zone.com"
+  default     = "test-zone.com"
 }
 
 variable "subdomain" {
-  type = string
+  type        = string
   description = "The main domain of the application"
-  default = "test.test-zone.com"
+  default     = "test.test-zone.com"
 }
