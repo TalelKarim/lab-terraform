@@ -17,3 +17,7 @@
 output "rds-database-endpoint" {
   value = module.database.rds_endpoint
 }
+
+output "rds_host" {
+  value = local.rds_host
+}

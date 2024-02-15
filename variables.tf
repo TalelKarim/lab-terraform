@@ -11,6 +11,25 @@ variable "region" {
   default     = "eu-west-3"
 }
 
+variable "db_username" {
+  type        = string
+  description = "The username of the database"
+  default     = "talel"
+}
+
+variable "db_password" {
+  type        = string
+  description = "The password of the database"
+  default     = "00000000"
+}
+
+variable "db_name" {
+  type        = string
+  description = "The name of the database"
+  default     = "test"
+}
+
+
 
 
 variable "main_domain" {

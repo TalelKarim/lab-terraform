@@ -55,8 +55,8 @@ resource "aws_security_group" "instance_sg" {
   }
 
   ingress {
-    from_port   = 3000
-    to_port     = 3000
+    from_port   = 8081
+    to_port     = 8081
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -84,7 +84,7 @@ resource "aws_launch_template" "this" {
   name          = "${var.project}-tpl"
   instance_type = var.instance_type
   key_name      = aws_key_pair.key_pair.key_name
-  user_data     = filebase64(var.user_data_file)
+  user_data     = base64encode(var.user_data_file)
   image_id      = data.aws_ami.ubuntu.id
   block_device_mappings {
     device_name = "/dev/sda1"

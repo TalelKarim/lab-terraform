@@ -9,6 +9,16 @@ variable "instance_class" {
   description = "The compute power of the database"
 }
 
+variable "vpc_id" {
+  type        = string
+  description = "The id of the vpc where the database will be created"
+
+}
+
+variable "subnet_ids" {
+  type        = list(string)
+  description = "The id of the subnets used to deploy the database"
+}
 
 variable "allocated_storage" {
   type        = number
