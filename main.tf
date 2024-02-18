@@ -4,10 +4,17 @@ provider "aws" {
   region = var.region
 }
 
+provider "vault" {
+}
+
+
 locals {
   rds_host = split(":", module.database.rds_endpoint)[0]
 }
 
+data "vault_generic_secret" "database_credentials" {
+  path = "kv/rds"
+}
 module "s3_bucket" {
   source      = "./modules/s3_bucket"
   bucket_name = "alb-logs-tk"
@@ -35,13 +42,13 @@ module "auto_scaling_group" {
   source        = "./modules/asg_group"
   instance_type = "t2.medium"
   user_data_file = templatefile("${path.module}/user_data_template.sh.tpl", {
-    DB_USERNAME = var.db_username
-    DB_PWD      = var.db_password
-    DBNAME      = var.db_name
+    DB_USERNAME = data.vault_generic_secret.database_credentials.data.db_username
+    DB_PWD      = data.vault_generic_secret.database_credentials.data.db_password
+    DBNAME      = data.vault_generic_secret.database_credentials.data.db_name
     DB_HOST     = local.rds_host
-    SERVER_URL= "host-ip"
-    SERVER_PORT= 8080
-    PORT= 8081
+    SERVER_URL  = "host-ip"
+    SERVER_PORT = 8080
+    PORT        = 8081
   })
 
   vpc_zone_identifier       = module.vpc.subnet_ids
@@ -74,9 +81,9 @@ module "database" {
   instance_class    = "db.t2.micro"
   allocated_storage = 5
   storage_type      = "gp2"
-  db_name           = var.db_name
-  db_username       = var.db_username
-  db_password       = var.db_password
+  db_name           = data.vault_generic_secret.database_credentials.data.db_name
+  db_username       = data.vault_generic_secret.database_credentials.data.db_username
+  db_password       = data.vault_generic_secret.database_credentials.data.db_password
   vpc_id            = module.vpc.vpc_id
   subnet_ids        = module.vpc.subnet_ids
 }

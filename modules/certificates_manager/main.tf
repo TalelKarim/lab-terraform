@@ -23,7 +23,7 @@ resource "aws_route53_record" "cert_validation" {
 
 resource "null_resource" "wait_for_cert_validation" {
   provisioner "local-exec" {
-    command = "sleep 300" # Wait for 5 minutes (adjust as needed)
+    command = "sleep 3" # Wait for 5 minutes (adjust as needed)
   }
 
   depends_on = [aws_route53_record.cert_validation]
