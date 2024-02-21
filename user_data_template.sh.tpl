@@ -2,6 +2,7 @@
 
 # Update and install required packages
 sudo apt-get update -y
+sudo apt install net-tools
 sudo apt-get install -y git
 sudo apt-get install -y docker.io
 sudo systemctl enable docker
