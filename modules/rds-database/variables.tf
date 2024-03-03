@@ -44,3 +44,8 @@ variable "db_password" {
   type        = string
   description = "The password use to access the database"
 }
+
+variable "load_balancer_security_group_id" {
+  type        = string
+  description = "The id of the security group of Ec2 instances"
+}

@@ -10,3 +10,7 @@ output "load_balancer_dns" {
 output "load_balancer_zone_id" {
   value = aws_lb.my_alb.zone_id
 }
+
+output "load_balancer_security_group_id" {
+  value = aws_security_group.alb_sg.id
+}

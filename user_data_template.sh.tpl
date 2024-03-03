@@ -2,7 +2,8 @@
 
 # Update and install required packages
 sudo apt-get update -y
-sudo apt install net-tools
+sudo apt install -y  net-tools
+sudo apt install -y mysql-client-core-8.0
 sudo apt-get install -y git
 sudo apt-get install -y docker.io
 sudo systemctl enable docker
@@ -11,8 +12,8 @@ sudo systemctl start docker
 # Set permissions for Docker socket
 sudo chmod 777 /var/run/docker.sock
 
-sudo apt install -y docker-compose
-
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
+sudo chmod +x /usr/bin/docker-compose
 
 # Define the Docker Compose content using a here document
 sudo tee docker-compose.yml > /dev/null <<'EOF'

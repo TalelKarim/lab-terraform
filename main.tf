@@ -30,7 +30,7 @@ module "alb" {
   lb_name               = "tf-alb"
   lb_internal           = false
   lb_load_balancer_type = "application"
-  lb_subnets            = module.vpc.subnet_ids
+  lb_subnets            = module.vpc.public_subnet_ids
   vpc_id                = module.vpc.vpc_id
   input_bucket_name     = module.s3_bucket.bucket_name
   ssl_certificate_arn   = module.tls_certificate.certificate_arn
@@ -46,12 +46,11 @@ module "auto_scaling_group" {
     DB_PWD      = data.vault_generic_secret.database_credentials.data.db_password
     DBNAME      = data.vault_generic_secret.database_credentials.data.db_name
     DB_HOST     = local.rds_host
-    SERVER_URL  = "host-ip"
     SERVER_PORT = 8080
     PORT        = 8081
   })
 
-  vpc_zone_identifier       = module.vpc.subnet_ids
+  vpc_zone_identifier       = module.vpc.public_subnet_ids
   max_size                  = 5
   min_size                  = 1
   desired_capacity          = 3
@@ -76,14 +75,15 @@ module "route53" {
 
 
 module "database" {
-  source            = "./modules/rds-database"
-  engine            = "mysql"
-  instance_class    = "db.t2.micro"
-  allocated_storage = 5
-  storage_type      = "gp2"
-  db_name           = data.vault_generic_secret.database_credentials.data.db_name
-  db_username       = data.vault_generic_secret.database_credentials.data.db_username
-  db_password       = data.vault_generic_secret.database_credentials.data.db_password
-  vpc_id            = module.vpc.vpc_id
-  subnet_ids        = module.vpc.subnet_ids
+  source                          = "./modules/rds-database"
+  engine                          = "mysql"
+  instance_class                  = "db.t2.micro"
+  allocated_storage               = 5
+  storage_type                    = "gp2"
+  db_name                         = data.vault_generic_secret.database_credentials.data.db_name
+  db_username                     = data.vault_generic_secret.database_credentials.data.db_username
+  db_password                     = data.vault_generic_secret.database_credentials.data.db_password
+  vpc_id                          = module.vpc.vpc_id
+  subnet_ids                      = module.vpc.private_subnet_ids
+  load_balancer_security_group_id = module.alb.load_balancer_security_group_id
 }
